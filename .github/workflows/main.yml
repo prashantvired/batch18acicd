@@ -1,0 +1,18 @@
+name: Deploy HTML file
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: run bash command
+      run: whoami
+
+    - name: more commands
+      run: pwd
+    
