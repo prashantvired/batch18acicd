@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: code checkout
+      uses: actions/checkout@v7
+    
     - name: run bash command
       run: whoami
 
