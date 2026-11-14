@@ -1,5 +1,4 @@
-name: Deploy HTML file
-
+name: Dev Branch CI
 on:
   pull_request:
     branches:
