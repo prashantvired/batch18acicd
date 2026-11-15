@@ -12,19 +12,30 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
-
     steps:
     - name: code checkout
       uses: actions/checkout@v7
-    
-    - name: run bash command
-      run: whoami
-
-    - name: more commands
-      run: pwd
-
     - name: listing files
       run: ls
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - name: run security scan
+      run: |
+        echo "Running security scan.."
+
+  deploy:
+    needs: [testing, security]
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+    - name: deploy
+      run: |
+        ls
+        echo "Deployment started"
+      
+    
 
     # - name: Execute remote SSH commands using password
     #   uses: appleboy/ssh-action@v1
