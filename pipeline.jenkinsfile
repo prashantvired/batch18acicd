@@ -4,6 +4,7 @@ pipeline {
     agent any
     environment{
         REPO_URL = "https://github.com/prashantvired/batch18acicd"
+        IMAGE = "sampleimagenginx"
     }
     parameters {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Github branch')
@@ -43,6 +44,13 @@ pipeline {
                             echo "Security Testing"
                         '''
                     }
+                }
+            }
+        }
+        stage("Docker build"){
+            steps{
+                script{
+                    app = docker.build("${env.IMAGE}:v1.${BUILD_NUMBER}")
                 }
             }
         }
