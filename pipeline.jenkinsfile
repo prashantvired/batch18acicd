@@ -26,19 +26,27 @@ pipeline {
                     url: env.REPO_URL
             }
         }
-        stage("testing"){
-            steps {
-                sh '''
-                    ls -al
-                    pwd
-                    whoami
-                '''
-                // script{
-                //     def name = "Prashant"
-                //     sh 'pwd'
-                // }
+        stage("Security and QA") {
+            parallel{
+                stage("testing"){
+                    steps {
+                        sh '''
+                            ls -al
+                            pwd
+                            whoami
+                        '''
+                    }
+                }
+                stage("Security testing"){
+                    steps {
+                        sh '''
+                            echo "Security Testing"
+                        '''
+                    }
+                }
             }
         }
+        
         stage("Copy files to remote machine"){
             steps{
                 sshagent(credentials: ['prashant-ec2-ssh']) {
