@@ -8,10 +8,10 @@ pipeline {
     }
     parameters {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Github branch')
-        // booleanParam(name: 'SECURITY_TESTING', defaultValue: true, description: 'Security Testing')
-        // choice(name: 'ENVIRONMENT_DEPLOYMENT', choices: ['dev', 'prod', 'staging'], description: "Deployment environment")
-        // password(name: 'DB_PASSWORD', defaultValue: '', description: "Masked password")
-        // text(name: 'RELEASE_NOTE', defaultValue: '', description: 'Release note in multiline')
+        booleanParam(name: 'SECURITY_TESTING', defaultValue: true, description: 'Security Testing')
+        choice(name: 'ENVIRONMENT_DEPLOYMENT', choices: ['dev', 'prod', 'staging'], description: "Deployment environment")
+        password(name: 'DB_PASSWORD', defaultValue: '', description: "Masked password")
+        text(name: 'RELEASE_NOTE', defaultValue: '', description: 'Release note in multiline')
     }
 
     stages {
@@ -47,6 +47,20 @@ pipeline {
                 }
             }
         }
+        stage("Update the port number"){
+            steps{
+                script{
+                    if(params.ENVIRONMENT_DEPLOYMENT == 'prod'){
+                        env.PORT = 80
+                    } else if (params.ENVIRONMENT_DEPLOYMENT == 'dev'){
+                        env.PORT = 8080
+                    } else {
+                        env.PORT = 3000
+                    }
+                    echo "Port number is ${env.PORT}"
+                }
+            }
+        }
         stage("Docker build"){
             steps{
                 script{
@@ -74,6 +88,20 @@ pipeline {
                     '''
                 }
             }
+        }
+    }
+    post{
+        success {
+            echo "Execution successful"
+        }
+        failure {
+            echo "Pipeline failed"
+        }
+        always {
+            echo "Run everytime"
+        }
+        aborted {
+            echo "Aborted the pipeline"
         }
     }
 }
