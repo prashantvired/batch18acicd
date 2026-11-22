@@ -1,0 +1,63 @@
+def repoUrl = "https://github.com/prashantvired/batch18acicd"
+
+pipeline {
+    agent any
+    environment{
+        REPO_URL = "https://github.com/prashantvired/batch18acicd"
+    }
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Github branch')
+        // booleanParam(name: 'SECURITY_TESTING', defaultValue: true, description: 'Security Testing')
+        // choice(name: 'ENVIRONMENT_DEPLOYMENT', choices: ['dev', 'prod', 'staging'], description: "Deployment environment")
+        // password(name: 'DB_PASSWORD', defaultValue: '', description: "Masked password")
+        // text(name: 'RELEASE_NOTE', defaultValue: '', description: 'Release note in multiline')
+    }
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo "The branch name is ${params.BRANCH_NAME}"
+            }
+        }
+        stage('Checkout'){
+            steps{
+                echo "Starting the checkout"
+                git branch: 'main',
+                    url: env.REPO_URL
+            }
+        }
+        stage("testing"){
+            steps {
+                sh '''
+                    ls -al
+                    pwd
+                    whoami
+                '''
+                // script{
+                //     def name = "Prashant"
+                //     sh 'pwd'
+                // }
+            }
+        }
+        stage("Copy files to remote machine"){
+            steps{
+                sshagent(credentials: ['prashant-ec2-ssh']) {
+                    sh '''
+                        scp -o StrictHostKeyChecking=no index.html ubuntu@204.236.215.232:/home/ubuntu
+                    '''
+                }
+            }
+        }
+        stage('SSH deployment'){
+            steps{
+                sshagent(credentials: ['prashant-ec2-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@204.236.215.232 "
+                        sudo cp -r * /var/www/html
+                        "
+                    '''
+                }
+            }
+        }
+    }
+}
